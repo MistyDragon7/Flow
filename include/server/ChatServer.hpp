@@ -22,7 +22,7 @@ typedef int socklen_t;
 #include <vector>
 #include <algorithm>
 #include <optional>
-// #include "../user/UserManager.hpp" // Include UserManager
+#include "../user/UserManager.hpp" // Include UserManager
 
 class ChatServer
 {
@@ -47,7 +47,7 @@ private:
     // Mutex to protect access to the clients_ map.
     std::mutex clients_mutex_;
     bool running_ = false;
-    // UserManager user_manager_;
+    UserManager user_manager_;
 };
 
 #endif // CHAT_SERVER_HPP

@@ -1,13 +1,40 @@
 #include "../../include/user/UserManager.hpp"
 #include "../../include/user/User.hpp"
 #include "../../include/nlohmann/json.hpp"
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 
+
+using json = nlohmann::json;
+// Initialises UserManager and ensures file is valid.
 UserManager::UserManager(const std::string& filename) : dataFile(filename) {
+    if (!std::filesystem::exists(dataFile) || std::filesystem::file_size(dataFile)==0) {
+        std::ofstream outfile(dataFile);
+        if (outfile.is_open()) {
+            outfile<<"{}";
+        }
+    }
+    else {
+        std::ifstream checkFile(dataFile);
+        std::string content((std::istreambuf_iterator<char>(checkFile)),
+                            std::istreambuf_iterator<char>());
+        checkFile.close();
+        try {
+            json::parse(content); // Try to parse to validate
+        } catch (const json::parse_error& e) {
+            std::cerr << "Corrupted JSON file detected: " << dataFile << ". Overwriting with empty object. Error: " << e.what() << std::endl;
+            std::ofstream outFile(dataFile);
+            if (outFile.is_open()) {
+                outFile << "{}";
+            }
+        }
+    }
     loadFromFile();
 }
 
+//Loads user data from json into memory
 void UserManager::loadFromFile() {
     // Basic implementation: does nothing for now.
     // Will be expanded in Medium-Term Vision.
